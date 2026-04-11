@@ -1,0 +1,106 @@
+# ============================================================
+# docker-compose.yml
+# Lance 3 instances PostgreSQL simulant AWS, GCP et Azure
+# Auteur : Etudiante M2 - ESP Antsiranana
+# ============================================================
+
+version: '3.8'
+
+services:
+
+  # --- Cloud AWS : Nœud Master (principal) ---
+  cloud-aws:
+    image: postgres:15
+    container_name: cloud-aws
+    environment:
+      POSTGRES_DB: cloud_aws
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - aws_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - multicloud-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Cloud GCP : Réplica 1 ---
+  cloud-gcp:
+    image: postgres:15
+    container_name: cloud-gcp
+    environment:
+      POSTGRES_DB: cloud_gcp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - gcp_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - multicloud-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Cloud Azure : Réplica 2 ---
+  cloud-azure:
+    image: postgres:15
+    container_name: cloud-azure
+    environment:
+      POSTGRES_DB: cloud_azure
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - azure_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - multicloud-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- API Node.js ---
+  api:
+    build: .
+    container_name: api-replication
+    ports:
+      - "3000:3000"
+    environment:
+      AWS_HOST: cloud-aws
+      AWS_PORT: 5432
+      GCP_HOST: cloud-gcp
+      GCP_PORT: 5432
+      AZURE_HOST: cloud-azure
+      AZURE_PORT: 5432
+    depends_on:
+      cloud-aws:
+        condition: service_healthy
+      cloud-gcp:
+        condition: service_healthy
+      cloud-azure:
+        condition: service_healthy
+    networks:
+      - multicloud-network
+
+# --- Volumes persistants pour chaque cloud ---
+volumes:
+  aws_data:
+  gcp_data:
+  azure_data:
+
+# --- Réseau interne entre les conteneurs ---
+networks:
+  multicloud-network:
+    driver: bridge

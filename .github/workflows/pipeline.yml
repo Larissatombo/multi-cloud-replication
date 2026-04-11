@@ -1,0 +1,67 @@
+# ============================================================
+# pipeline.yml - Pipeline CI/CD GitHub Actions
+# Exécuté à chaque push ou pull request sur main
+# Auteur : Etudiante M2 - ESP Antsiranana
+# ============================================================
+
+name: CI/CD Multi-Cloud Replication
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  # --- Étape 1 : Tests automatisés ---
+  test:
+    name: Tests automatisés
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Lancer les tests Jest
+        run: npm test
+
+  # --- Étape 2 : Build Docker ---
+  build:
+    name: Build image Docker
+    runs-on: ubuntu-latest
+    needs: test  # Lance seulement si les tests passent
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Construire l'image Docker
+        run: docker build -t multi-cloud-api:latest .
+
+      - name: Vérifier que l'image existe
+        run: docker images | grep multi-cloud-api
+
+  # --- Étape 3 : Déploiement simulé ---
+  deploy:
+    name: Déploiement (simulation)
+    runs-on: ubuntu-latest
+    needs: build  # Lance seulement si le build réussit
+    if: github.ref == 'refs/heads/main'  # Seulement sur la branche main
+
+    steps:
+      - name: Simulation du déploiement
+        run: |
+          echo "✅ Tests passés"
+          echo "✅ Image Docker construite"
+          echo "🚀 Déploiement sur l'environnement de production simulé..."
+          echo "✅ Déploiement terminé avec succès !"

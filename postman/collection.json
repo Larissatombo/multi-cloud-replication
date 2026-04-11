@@ -1,0 +1,93 @@
+{
+  "info": {
+    "name": "Multi-Cloud Replication API",
+    "description": "Collection de tests pour le projet M2 - Réplication multi-cloud\nAuteur : Etudiante M2 - ESP Antsiranana",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Accueil de l'API",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/",
+        "description": "Vérifier que l'API répond et voir les endpoints disponibles"
+      }
+    },
+    {
+      "name": "2. Santé de l'API",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/health",
+        "description": "Vérifier l'état de santé de l'API"
+      }
+    },
+    {
+      "name": "3. Créer un utilisateur (réplication)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/users",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom\": \"Marie Curie\",\n  \"email\": \"marie.curie@example.com\"\n}"
+        },
+        "description": "Crée un utilisateur sur AWS (master) puis le réplique sur GCP et Azure"
+      }
+    },
+    {
+      "name": "4. Lire les données - Cloud AWS",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/users/aws",
+        "description": "Récupérer tous les utilisateurs depuis le cloud AWS (master)"
+      }
+    },
+    {
+      "name": "5. Lire les données - Cloud GCP",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/users/gcp",
+        "description": "Récupérer tous les utilisateurs depuis le cloud GCP (réplica 1)"
+      }
+    },
+    {
+      "name": "6. Lire les données - Cloud Azure",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/users/azure",
+        "description": "Récupérer tous les utilisateurs depuis le cloud Azure (réplica 2)"
+      }
+    },
+    {
+      "name": "7. Vérifier la cohérence",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/consistency",
+        "description": "Vérifier que les 3 clouds ont le même nombre d'enregistrements"
+      }
+    },
+    {
+      "name": "8. Test erreur - champs manquants",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/users",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "description": "Doit retourner une erreur 400 car les champs sont manquants"
+      }
+    }
+  ]
+}
