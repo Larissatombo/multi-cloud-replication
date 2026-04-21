@@ -1,14 +1,7 @@
-# ============================================================
-# docker-compose.yml
-# Lance 3 instances PostgreSQL simulant AWS, GCP et Azure
-# Auteur : Etudiante M2 - ESP Antsiranana
-# ============================================================
-
 version: '3.8'
 
 services:
 
-  # --- Cloud AWS : Nœud Master (principal) ---
   cloud-aws:
     image: postgres:15
     container_name: cloud-aws
@@ -29,7 +22,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- Cloud GCP : Réplica 1 ---
   cloud-gcp:
     image: postgres:15
     container_name: cloud-gcp
@@ -50,7 +42,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- Cloud Azure : Réplica 2 ---
   cloud-azure:
     image: postgres:15
     container_name: cloud-azure
@@ -71,7 +62,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- API Node.js ---
   api:
     build: .
     container_name: api-replication
@@ -94,13 +84,11 @@ services:
     networks:
       - multicloud-network
 
-# --- Volumes persistants pour chaque cloud ---
 volumes:
   aws_data:
   gcp_data:
   azure_data:
 
-# --- Réseau interne entre les conteneurs ---
 networks:
   multicloud-network:
     driver: bridge

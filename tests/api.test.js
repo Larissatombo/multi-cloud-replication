@@ -1,15 +1,8 @@
-// ============================================================
-// api.test.js - Tests automatisés de l'API
-// Framework : Jest + Supertest
-// Auteur : Etudiante M2 - ESP Antsiranana
-// ============================================================
-
 const request = require('supertest');
 const app = require('../src/app');
 
-// --- Tests de la route principale ---
 describe('GET /', () => {
-  test('Doit retourner un message de bienvenue', async () => {
+  test('doit retourner un message de bienvenue', async () => {
     const res = await request(app).get('/');
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('message');
@@ -17,9 +10,8 @@ describe('GET /', () => {
   });
 });
 
-// --- Tests de la route /health ---
 describe('GET /health', () => {
-  test('Doit retourner status OK', async () => {
+  test('doit retourner status OK', async () => {
     const res = await request(app).get('/health');
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe('OK');
@@ -27,9 +19,8 @@ describe('GET /health', () => {
   });
 });
 
-// --- Tests de la route POST /users ---
 describe('POST /users', () => {
-  test('Doit retourner 400 si les champs sont manquants', async () => {
+  test('doit retourner 400 si les champs sont manquants', async () => {
     const res = await request(app)
       .post('/users')
       .send({});
@@ -52,9 +43,9 @@ describe('POST /users', () => {
   });
 });
 
-// --- Tests de la route GET /users/:cloud ---
+
 describe('GET /users/:cloud', () => {
-  test('Doit retourner 400 pour un cloud inconnu', async () => {
+  test('doit retourner 400 pour un cloud inconnu', async () => {
     const res = await request(app).get('/users/oracle');
     expect(res.statusCode).toBe(400);
     expect(res.body).toHaveProperty('error');

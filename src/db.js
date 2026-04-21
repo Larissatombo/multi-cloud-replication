@@ -1,13 +1,6 @@
-// ============================================================
-// db.js - Connexions aux 3 bases de données PostgreSQL
-// Chaque base simule un cloud différent (AWS, GCP, Azure)
-// Auteur : Etudiante M2 - ESP Antsiranana
-// ============================================================
-
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// --- Connexion Cloud AWS (nœud principal / master) ---
 const cloudAWS = new Pool({
   host: process.env.AWS_HOST || 'localhost',
   port: process.env.AWS_PORT || 5433,
@@ -16,7 +9,6 @@ const cloudAWS = new Pool({
   password: process.env.AWS_PASSWORD || 'postgres',
 });
 
-// --- Connexion Cloud GCP (réplica 1) ---
 const cloudGCP = new Pool({
   host: process.env.GCP_HOST || 'localhost',
   port: process.env.GCP_PORT || 5434,
@@ -25,7 +17,6 @@ const cloudGCP = new Pool({
   password: process.env.GCP_PASSWORD || 'postgres',
 });
 
-// --- Connexion Cloud Azure (réplica 2) ---
 const cloudAzure = new Pool({
   host: process.env.AZURE_HOST || 'localhost',
   port: process.env.AZURE_PORT || 5435,
@@ -34,7 +25,6 @@ const cloudAzure = new Pool({
   password: process.env.AZURE_PASSWORD || 'postgres',
 });
 
-// --- Fonction pour tester toutes les connexions au démarrage ---
 async function testConnections() {
   const clouds = [
     { name: 'AWS', pool: cloudAWS },
@@ -45,9 +35,9 @@ async function testConnections() {
   for (const cloud of clouds) {
     try {
       await cloud.pool.query('SELECT 1');
-      console.log(`✅ Connexion ${cloud.name} établie avec succès`);
+      console.log(`Connexion ${cloud.name} établie avec succès`);
     } catch (err) {
-      console.error(`❌ Erreur de connexion ${cloud.name} :`, err.message);
+      console.error(`Erreur de connexion ${cloud.name} :`, err.message);
     }
   }
 }

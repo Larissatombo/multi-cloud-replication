@@ -1,15 +1,9 @@
-# 📐 Architecture et Choix Techniques
-
-> Projet M2 — Multi-Cloud Replication  
-> Auteure : Etudiante M2 — ESP Antsiranana
-
----
+# Architecture et Choix Techniques
 
 ## 1. Vue d'ensemble de l'architecture
 
 Le système repose sur une architecture **Master-Slave** avec un nœud principal (AWS) et deux réplicas (GCP, Azure), tous simulés via Docker sur une machine locale.
 
-```
 Client (Postman / Navigateur)
         │
         ▼
@@ -28,9 +22,6 @@ Client (Postman / Navigateur)
    │ AWS:5433 │   │GCP:5434 │   │Azure:5435│
    │ Master   │   │Réplica 1│   │Réplica 2 │
    └──────────┘   └─────────┘   └──────────┘
-```
-
----
 
 ## 2. Choix techniques justifiés
 
@@ -58,8 +49,6 @@ Client (Postman / Navigateur)
 - Gratuit pour les projets publics
 - Pipeline automatique : Tests → Build → Déploiement
 
----
-
 ## 3. Stratégie de réplication
 
 **Type choisi : Réplication synchrone applicative**
@@ -79,11 +68,9 @@ Client (Postman / Navigateur)
 - Pas de réplication en temps réel des suppressions/mises à jour → à implémenter en V2
 - En cas de panne réseau, les réplicas peuvent être désynchronisés → endpoint `/consistency` pour détecter
 
----
 
 ## 4. Diagramme de séquence (POST /users)
 
-```
 Client          API           AWS(Master)      GCP          Azure
   │              │                │              │              │
   │─POST /users─▶│                │              │              │
@@ -94,4 +81,4 @@ Client          API           AWS(Master)      GCP          Azure
   │              │──INSERT────────────────────────────────────▶│
   │              │◀──OK────────────────────────────────────────│
   │◀─201 Created─│                │              │              │
-```
+
